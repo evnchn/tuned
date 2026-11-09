@@ -343,7 +343,11 @@ class Controller(exports.interfaces.ExportableInterface):
         """
         Loads and returns the saved PPD base profile.
         """
-        return self._cmd.read_file(PPD_BASE_PROFILE_FILE, no_error=True).strip() or None
+        profile = self._cmd.read_file(PPD_BASE_PROFILE_FILE, no_error=True).strip()
+        if profile and profile not in self._config.ppd_to_tuned.keys(self._on_battery):
+            log.warning("Ignoring unknown PPD base profile %r in '%s'" % (profile, PPD_BASE_PROFILE_FILE))
+            return None
+        return profile or None
 
     def _get_recommend_profile(self):
         """
